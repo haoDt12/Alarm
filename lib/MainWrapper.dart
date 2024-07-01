@@ -1,8 +1,9 @@
-import 'package:alarm/views/alarm_page.dart';
+import 'package:alarm/views/Alarm/alarm_page.dart';
+import 'package:alarm/views/Timer/TimerDown.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:alarm/views/homePage.dart';
-import 'package:alarm/views/stop_watch_page.dart';
+import 'package:alarm/views/Clock/homePage.dart';
+import 'package:alarm/views/StopWatch/stop_watch_page.dart';
 
 
 class MainWrapper extends StatefulWidget {
@@ -113,7 +114,7 @@ class MainWrapperState extends State<MainWrapper> {
           children: <Widget>[
             HomePage(),
             AlarmPage(onHideTap: _onHideTapped, onShowTap: _onShowTapped),
-            HomePage(),
+            TimerDown(),
             StopWatchPage(),
           ],
         ),

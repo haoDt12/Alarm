@@ -23,28 +23,28 @@ class _StopWatchState extends State<StopWatchPage> {
     super.dispose();
   }
 
-  String mainButtonText = 'Bắt đầu';
-  String secondaryButtonText = 'Đặt lại';
+  String startButtonText = 'Bắt đầu';
+  String resetButtonText = 'Đặt lại';
 
-  void _mainButtonPressed(){
+  void _startButtonPressed(){
     setState(() {
-      if (mainButtonText == 'Bắt đầu') {
-        mainButtonText = 'Dừng';
-        secondaryButtonText = 'Đặt lại';
-      } else if (mainButtonText == 'Dừng') {
-        mainButtonText = 'Tiếp tục';
-        secondaryButtonText = 'Đặt lại';
-      } else if (mainButtonText == 'Tiếp tục') {
-        mainButtonText = 'Dừng';
-        secondaryButtonText = 'Đặt lại';
+      if (startButtonText == 'Bắt đầu') {
+        startButtonText = 'Dừng';
+        resetButtonText = 'Đặt lại';
+      } else if (startButtonText == 'Dừng') {
+        startButtonText = 'Tiếp tục';
+        resetButtonText = 'Đặt lại';
+      } else if (startButtonText == 'Tiếp tục') {
+        startButtonText = 'Dừng';
+        resetButtonText = 'Đặt lại';
       }
     });
   }
-  void _secondaryButtonPressed() {
+  void _resetButtonPressed() {
     setState(() {
-      if (secondaryButtonText == 'Đặt lại') {
-        mainButtonText = 'Bắt đầu';
-        secondaryButtonText = 'Bấm';
+      if (resetButtonText == 'Đặt lại') {
+        startButtonText = 'Bắt đầu';
+        resetButtonText = 'Bấm';
       }
     });
   }
@@ -53,11 +53,14 @@ class _StopWatchState extends State<StopWatchPage> {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 32, vertical: 64),
         child: Column(
-          
           children: [
-            Text(
-              startWatch.currentTime,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
+            Expanded(
+              child: Center(
+                child: Text(
+                  startWatch.currentTime,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
+                ),
+              ),
             ),
             Spacer(),
             Row(
@@ -66,13 +69,13 @@ class _StopWatchState extends State<StopWatchPage> {
                 ElevatedButton(
                   onPressed: () {
                     startWatch.resetStopwatch();
-                    _secondaryButtonPressed();
+                    _resetButtonPressed();
                     setState(() {
 
                     });
                   },
                   child: Text(
-                    secondaryButtonText,
+                    resetButtonText,
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -85,18 +88,19 @@ class _StopWatchState extends State<StopWatchPage> {
                 SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: (){
-                    _mainButtonPressed();
+                    _startButtonPressed();
                     startWatch.startStopwatch(() {
                       setState(() {});
                     });
                   },
                   child: Text(
-                    mainButtonText,
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    startButtonText,
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
                     // primary: startWatch.isRunning ? Colors.redAccent : Colors.purple,
                     // onPrimary: Colors.white,
+                    backgroundColor: startWatch.isRunning ? Colors.red[800] : Colors.purple,
                     padding: EdgeInsets.symmetric(horizontal: 35, vertical: 20),
                     minimumSize: Size(130, 50),
                   ),

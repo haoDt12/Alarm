@@ -1,9 +1,10 @@
-import 'package:alarm/data/data.dart';
+
 import 'package:alarm/data/models/alarm_info.dart';
 import 'package:alarm/helper/alarm_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 final formatter = DateFormat.yMd();
@@ -14,97 +15,118 @@ class AddAlarm extends StatefulWidget {
   @override
   State<AddAlarm> createState() => _AddAlarmState();
 }
-class _AddAlarmState extends State<AddAlarm> {
-  TextEditingController hourController = TextEditingController(text: '06');
-  TextEditingController minuteController = TextEditingController(text: '00');
-  TextEditingController titleAlarm = TextEditingController();
-  FocusNode focusNode1 = FocusNode();
-  FocusNode focusNode2 = FocusNode();
-  bool isFocused1 = false;
-  bool isFocused2 = false;
+  class _AddAlarmState extends State<AddAlarm> {
+    TextEditingController hourController = TextEditingController(text: '06');
+    TextEditingController minuteController = TextEditingController(text: '00');
+    TextEditingController titleAlarm = TextEditingController();
+    FocusNode focusNode1 = FocusNode();
+    FocusNode focusNode2 = FocusNode();
+    bool isFocused1 = false;
+    bool isFocused2 = false;
 
 
-  DateTime? alarmDateTime;
-  DateTime? alarmDay;
-  String? _alarmTimeString;
-  Future<List<AlarmInfo>>? _alarms;
+    DateTime? alarmDateTime;
+    DateTime? alarmDay;
+    String? _alarmTimeString;
+    Future<List<AlarmInfo>>? _alarms;
 
 
-  DateTime? _selectedDate;
-  int hour = 0;
-  int minutes = 0;
-  bool _isSoundEnabled = false;
-  bool _isVibrationEnabled = false;
-  bool _isSnoozeEnabled = false;
+    DateTime? _selectedDate;
+    int hour = 0;
+    int minutes = 0;
+    bool _isSoundEnabled = false;
+    bool _isVibrationEnabled = false;
+    bool _isSnoozeEnabled = false;
 
-  AlarmHelper _alarmHelper = AlarmHelper();
+    AlarmHelper _alarmHelper = AlarmHelper();
 
-  final formatter = DateFormat('EEE, d MMM yyyy', 'vi_VN');
-  String _formatSelectedDate(DateTime selectedDate) {
-    final now = DateTime.now();
-    final formattedDate = formatter.format(selectedDate);
+    final formatter = DateFormat('EEE, d MMM yyyy', 'vi_VN');
+    String _formatSelectedDate(DateTime selectedDate) {
+      final now = DateTime.now();
+      final formattedDate = formatter.format(selectedDate);
 
-    if (selectedDate.year == now.year) {
-      return formattedDate.replaceFirst('${now.year}', '');
-    } else {
-      return formattedDate;
+      if (selectedDate.year == now.year) {
+        return formattedDate.replaceFirst('${now.year}', '');
+      } else {
+        return formattedDate;
+      }
     }
-  }
-  //
-  void _addAlarm() async{
-    List<AlarmInfo> currentAlarms = await _alarmHelper.getAlarm();
-    final int hour = int.tryParse(hourController.text) ?? 0;
-    final int minute = int.tryParse(minuteController.text) ?? 0;
-    String title = titleAlarm.text.isNotEmpty ? titleAlarm.text : "Alarm";
-
-    if (_selectedDate != null) {
-      // Lấy ngày và giờ đã chọn từ _selectedDate
-      alarmDateTime = DateTime(
-        _selectedDate!.year,
-        _selectedDate!.month,
-        _selectedDate!.day,
-        hour,
-        minute,
-      );
-
-      print('Ngày: $alarmDateTime');
 
 
+    // Phương thức để thêm báo thức
+    void _addAlarm() async {
+      List<AlarmInfo> currentAlarms = await _alarmHelper.getAlarm();
+      final int hour = int.tryParse(hourController.text) ?? 0;
+      final int minute = int.tryParse(minuteController.text) ?? 0;
+      String title = titleAlarm.text.isNotEmpty ? titleAlarm.text : "Alarm";
 
-      // Thêm báo thức vào cơ sở dữ liệu
-      var alarmInfo = AlarmInfo(
-        alarmDateTime: alarmDateTime,
-        gradientColorIndex: currentAlarms!.length,
-        title: title,
-        isPending: true,
-      );
-      _alarmHelper.insertAlarm(alarmInfo);
-      setState(() {
-        _alarms = _alarmHelper.getAlarm();
-      });
-      Navigator.pop(context,true);
-    } else {
-      // Xử lý trường hợp người dùng chưa chọn ngày
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Chưa chọn ngày'),
-          content: Text('Vui lòng chọn ngày trước khi thêm báo thức.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Đóng dialog
-              },
-              child: Text('OK'),
+      if (_selectedDate != null) {
+        // Kiểm tra nếu giờ và phút đã chọn là hợp lệ
+        if (hour < 0 || hour >= 24 || minute < 0 || minute >= 60) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Giờ và phút không hợp lệ!'),
             ),
-          ],
-        ),
-      );
+          );
+          return;
+        }
+
+        // Lấy ngày và giờ đã chọn từ _selectedDate
+        DateTime alarmDateTime = DateTime(
+          _selectedDate!.year,
+          _selectedDate!.month,
+          _selectedDate!.day,
+          hour,
+          minute,
+        );
+
+        // Kiểm tra ngày giờ đã chọn có lớn hơn ngày giờ hiện tại không
+        if (alarmDateTime.isBefore(DateTime.now())) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Không thể chọn ngày trong quá khứ!'),
+            ),
+          );
+          return;
+        }
+
+        // Thêm báo thức vào cơ sở dữ liệu
+        var alarmInfo = AlarmInfo(
+          alarmDateTime: alarmDateTime,
+          gradientColorIndex: currentAlarms!.length,
+          title: title,
+          isPending: true,
+        );
+        _alarmHelper.insertAlarm(alarmInfo);
+        setState(() {
+          _alarms = _alarmHelper.getAlarm();
+        });
+        Navigator.pop(context, true);
+      } else {
+        // Xử lý trường hợp người dùng chưa chọn ngày
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Chưa chọn ngày'),
+            content: Text('Vui lòng chọn ngày trước khi thêm báo thức.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Đóng dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     }
-  }
 
 
-  void moveToNextField(TextEditingController currentController, TextEditingController nextController) {
+
+
+
+    void moveToNextField(TextEditingController currentController, TextEditingController nextController) {
     if (currentController.text.length == 2) {
       if (currentController == hourController) {
         FocusScope.of(context).requestFocus(focusNode2);

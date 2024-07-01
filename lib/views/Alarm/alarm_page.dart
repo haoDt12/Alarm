@@ -8,7 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:alarm/helper/notification_service.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:alarm/views/add_alarm.dart';
+import 'package:alarm/views/Alarm/add_alarm.dart';
 
 class AlarmPage extends StatefulWidget {
   final VoidCallback onShowTap;
@@ -109,10 +109,13 @@ class _AlarmPageState extends State<AlarmPage> {
 
         // Update alarmDateTime in database
         await _alarmHelper.updateAlarmDateTime(alarm.id!, nextDay);
+        alarm.alarmDateTime = nextDay;
 
       }
     }
-    _refreshAlarmList();
+    setState(() {
+      _alarms = Future.value(alarms);
+    });
   }
 
 
@@ -168,71 +171,43 @@ class _AlarmPageState extends State<AlarmPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 64),
-        color: Color.fromARGB(255, 45, 47, 65),
+        padding: EdgeInsets.only(left: 20,top: 30,right: 20,bottom: 0),
+        color: Color.fromARGB(255, 246, 246, 248),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'Alarm',
-              style: TextStyle(
-                  fontFamily: 'anenir',
-                  fontWeight: FontWeight.w700,
-                  color: CustomColors.primaryTextColor,
-                  fontSize: 24),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-              DottedBorder(
-                strokeWidth: 3,
-                color: CustomColors.clockOutline,
-                borderType: BorderType.RRect,
-                radius: Radius.circular(24),
-                dashPattern: [5, 4],
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: CustomColors.clockBG,
-                    borderRadius: const BorderRadius.all(Radius.circular(24)),
-                  ),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 16),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddAlarm(),
-                        ),
-                      ).then((value) {
-                        if (value != null && value as bool) {
-                          // Reload alarms after adding or editing
-                          loadAlarms();
-                        }
-                      });
-                    },
-                    child: Column(
-                      children: <Widget>[
-                        Image.asset(
-                          'assets/add_alarm.png',
-                          scale: 1.5,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Add Alarm',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'avenir',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Alarm',
+                  style: TextStyle(
+                      fontFamily: 'anenir',
+                      fontWeight: FontWeight.w700,
+                      color: CustomColors.menuBackgroundColor,
+                      fontSize: 24),
                 ),
-              ),
+                IconButton(
+                  icon: Image.asset(
+                    'assets/add_alarm.png',
+                    scale: 1.5,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddAlarm(),
+                      ),
+                    ).then((value) {
+                      if (value != null && value as bool) {
+                        // Reload alarms after adding or editing
+                        loadAlarms();
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
             Expanded(
               child: FutureBuilder(
                 future: _alarms,
@@ -371,12 +346,13 @@ class _AlarmPageState extends State<AlarmPage> {
                         );
                       },
                     );
-                  return Center(
-                    child: Text(
-                      'Loading...',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
+                  else
+                    return Center(
+                      child: Text(
+                        'Loading...',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
                 },
               ),
             ),
@@ -434,7 +410,7 @@ class _AlarmPageState extends State<AlarmPage> {
       importance: Importance.high,
       priority: Priority.high,
       fullScreenIntent: true,
-      //ticker: 'ticker',
+      ticker: 'ticker',
       icon: 'clock_logo',
       sound: RawResourceAndroidNotificationSound('a_long_cold_sting'),
       largeIcon: DrawableResourceAndroidBitmap('codex_logo'),

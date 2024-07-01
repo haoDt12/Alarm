@@ -47,16 +47,16 @@ class ClockPainter extends CustomPainter {
     var radius = min(centerX, centerY);
 
     var fillBrush = Paint()
-      ..color = Color(0xFF444974);
+      ..color = Color(0xFFEAECFF);
 
     var outlineBrush = Paint()
-      ..color = Color(0xFFEAECFF)
+      ..color = Color(0xFF444974)
       ..style = PaintingStyle.stroke
       ..style = PaintingStyle.stroke
       ..strokeWidth = 16;
 
     var centerFillBrush = Paint()
-      ..color = Color(0xFFEAECFF);
+      ..color = Color(0xFF444974);
 
     var secHandBrush = Paint()
       ..color = Colors.orange[300]!
@@ -79,7 +79,7 @@ class ClockPainter extends CustomPainter {
       ..strokeWidth = 6;
 
     var dashBrush = Paint()
-      ..color = Color(0xFFEAECFF)
+      ..color = Color(0xFF444974)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2;
@@ -144,7 +144,7 @@ class ClockPainter extends CustomPainter {
       textPainter.text = TextSpan(
         text: i.toString(),
         style: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: 16,
         ),
       );

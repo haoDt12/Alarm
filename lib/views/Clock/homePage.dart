@@ -1,4 +1,4 @@
-import 'package:alarm/views/clock_view.dart';
+import 'package:alarm/views/Clock/clock_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
     if (!timezoneString.startsWith('-')) offsetSign = '+';
 
     return Scaffold(
-      backgroundColor: Color(0xFF2D2F41),
+      backgroundColor: Color.fromARGB(255, 246, 246, 248),
       body: Row(
         children: <Widget>[
           Container(
@@ -32,35 +32,35 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 Text(
                   'Đồng hồ',
-                  style: TextStyle(color: Colors.white, fontSize: 20,fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.black, fontSize: 20,fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 32),
                 Text(
                   formattedTime,
-                  style: TextStyle(color: Colors.white, fontSize: 35),
+                  style: TextStyle(color: Colors.black, fontSize: 35),
                 ),
                 Text(
                   formattedDate,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.black, fontSize: 18),
                 ),
                 SizedBox(height: 32),
                 ClockView(),
                 SizedBox(height: 32),
                 Text(
                   'Múi giờ',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.black, fontSize: 20),
                 ),
                 SizedBox(height: 8),
                 Row(
                   children: <Widget>[
                     Icon(
                       Icons.language,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                     SizedBox(width: 16),
                     Text(
                       'UTC' + offsetSign + timezoneString,
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      style: TextStyle(color: Colors.black, fontSize: 14),
                     ),
                   ],
                 ),
